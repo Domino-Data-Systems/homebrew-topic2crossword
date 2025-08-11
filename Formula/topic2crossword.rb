@@ -15,8 +15,8 @@ class Topic2crossword < Formula
   # Users need to install it manually: brew install --cask ollama
   
   def install
-    # Install Python dependencies
-    system "pip3", "install", "-r", "requirements.txt"
+    # Install Python dependencies using the Homebrew Python
+    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
@@ -25,8 +25,8 @@ class Topic2crossword < Formula
     bin.install "generate_crossword.sh" => "topic2crossword"
     chmod 0755, bin/"topic2crossword"
     
-    # Update the script to use the correct path for the Python script
-    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "python3 #{libexec}/generate_crossword.py"
+    # Update the script to use the correct path for the Python script and Homebrew Python
+    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula["python@3.9"].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
   end
   
   def caveats
