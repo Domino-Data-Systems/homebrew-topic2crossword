@@ -9,6 +9,8 @@ class Topic2crossword < Formula
   # sha256 "your_sha256_here"
   
   depends_on "python@3.9"
+  depends_on "pkg-config"
+  depends_on "cairo"
   # Note: Ollama is installed as a cask, so we don't declare it as a dependency
   # Users need to install it manually: brew install --cask ollama
   
