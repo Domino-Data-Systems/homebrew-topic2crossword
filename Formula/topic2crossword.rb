@@ -4,19 +4,20 @@ class Topic2crossword < Formula
   version "1.0.0"
   
   # For GitHub repository
-  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git", branch: "main"
+  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git"
   # You'll need to update this SHA256 after the first commit
   # sha256 "your_sha256_here"
   
   depends_on "python@3.9"
   depends_on "pkg-config"
   depends_on "cairo"
+  depends_on "gobject-introspection"
   # Note: Ollama is installed as a cask, so we don't declare it as a dependency
   # Users need to install it manually: brew install --cask ollama
   
   def install
     # Install Python dependencies using the Homebrew Python
-    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "-r", "requirements.txt"
+    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "--user", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
