@@ -65,4 +65,4 @@ topic2crossword "ancient civilizations"
 
 ## License
 
-[Add your license information here]
+Copyright (C) 2025, Shyamal Suhana Chandra
