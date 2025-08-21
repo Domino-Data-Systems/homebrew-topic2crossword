@@ -20,8 +20,8 @@ class Topic2crossword < Formula
     ENV["PKG_CONFIG_PATH"] = "#{Formula["cairo"].opt_lib}/pkgconfig:#{Formula["gobject-introspection"].opt_lib}/pkgconfig"
     ENV["GI_TYPELIB_PATH"] = "#{Formula["cairo"].opt_lib}/girepository-1.0"
     
-    # Install Python dependencies using the correct Python version
-    system Formula["python@3.9"].opt_bin/"python3", "-m", "pip", "install", "-r", "requirements.txt"
+    # Install Python dependencies using the correct Python version (globally)
+    system Formula["python@3.9"].opt_bin/"python3", "-m", "pip", "install", "--no-user", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
