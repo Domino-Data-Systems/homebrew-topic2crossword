@@ -20,8 +20,8 @@ class Topic2crossword < Formula
     ENV["PKG_CONFIG_PATH"] = "#{Formula["cairo"].opt_lib}/pkgconfig:#{Formula["gobject-introspection"].opt_lib}/pkgconfig"
     ENV["GI_TYPELIB_PATH"] = "#{Formula["cairo"].opt_lib}/girepository-1.0"
     
-    # Install Python dependencies using the correct Python version (globally)
-    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "--target", Formula["python@3.9"].opt_lib/"python3.9/site-packages", "-r", "requirements.txt"
+    # Install Python dependencies in the formula's libexec directory
+    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "--target", libexec/"python_packages", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
@@ -31,7 +31,7 @@ class Topic2crossword < Formula
     chmod 0755, bin/"topic2crossword"
     
     # Update the script to use the correct path for the Python script and Python interpreter
-    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula['python@3.9'].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
+    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "PYTHONPATH=#{libexec}/python_packages #{Formula['python@3.9'].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
   end
   
   def caveats
