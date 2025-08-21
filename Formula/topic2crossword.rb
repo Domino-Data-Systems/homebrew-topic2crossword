@@ -4,7 +4,7 @@ class Topic2crossword < Formula
   version "1.0.0"
   
   # For GitHub repository
-  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git"
+  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git", branch: "main"
   # You'll need to update this SHA256 after the first commit
   # sha256 "your_sha256_here"
   
