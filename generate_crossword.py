@@ -1,0 +1,58 @@
+import sys
+import json
+from genxword.calculate import Crossword
+from genxword.control import Genxword
+
+def main(questions_file, topic="Crossword Puzzle"):
+    # Load questions from a JSON file
+    try:
+        with open(questions_file, 'r') as file:
+            data = json.load(file)
+        print(f"Loaded {len(data)} questions from {questions_file}")
+    except Exception as e:
+        print(f"Error reading from {questions_file}: {e}")
+        sys.exit(1)
+
+    # Initialize crossword
+    crossword = Crossword(rows=50, cols=50)
+
+    # Add questions to crossword
+    for item in data:
+        try:
+            question = item['question']
+            answer = item['answer']
+            # Store the answer as a string, not a list
+            crossword.available_words.append([answer.replace(" ", ""), question])  # Remove spaces
+            print(f"Added word: {answer} with clue: {question}")
+        except (KeyError, ValueError) as e:
+            print(f"Error processing item: {item}. Error: {e}")
+            continue
+
+    # Prepare the word list in the expected format for Genxword
+    formatted_wordlist = []
+    for word_entry in crossword.available_words:
+        word = word_entry[0]  # Keep the word as a string
+        clue = word_entry[1]
+        formatted_wordlist.append([word, clue])  # Store as list of strings
+
+    # Initialize Genxword with necessary attributes
+    genxword = Genxword(auto=True)
+    genxword.nrow = crossword.rows
+    genxword.ncol = crossword.cols
+    genxword.wordlist = formatted_wordlist  # Ensure wordlist is a list of lists
+
+    # Calculate the grid size before generating
+    genxword.grid_size()
+
+    # Generate the crossword grid with the full title including company and author
+    full_title = f"Domino Data Systems AI Crossword Puzzle Generator by Shyamal Chandra - {topic}"
+    genxword.gengrid(full_title, "p")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: python3 generate_crossword.py <questions_file> [topic]")
+        sys.exit(1)
+
+    questions_file = sys.argv[1]
+    topic = sys.argv[2] if len(sys.argv) == 3 else "Crossword Puzzle"
+    main(questions_file, topic)
