@@ -44,9 +44,30 @@ def main(questions_file, topic="Crossword Puzzle"):
     # Calculate the grid size before generating
     genxword.grid_size()
 
-    # Generate the crossword grid with the full title including company and author
-    full_title = f"Domino Data Systems AI Crossword Puzzle Generator by Shyamal Chandra - {topic}"
-    genxword.gengrid(full_title, "p")
+    # Generate the crossword grid with the shortened title
+    short_title = f"DDS AI Crossword Generator - {topic}"
+    genxword.gengrid(short_title, "p")
+    
+    # Create filename-safe topic (replace spaces with underscores, remove special chars)
+    safe_topic = topic.replace(" ", "_").replace("-", "_")
+    safe_topic = ''.join(c for c in safe_topic if c.isalnum() or c == '_')
+    
+    # Rename the generated files to the desired format
+    import os
+    import glob
+    
+    # Find the generated files and rename them
+    for old_file in glob.glob(f"{short_title}_grid.pdf"):
+        new_file = f"DDS-AICWG-{safe_topic}_grid.pdf"
+        if os.path.exists(old_file):
+            os.rename(old_file, new_file)
+            print(f"Renamed {old_file} to {new_file}")
+    
+    for old_file in glob.glob(f"{short_title}_key.pdf"):
+        new_file = f"DDS-AICWG-{safe_topic}_key.pdf"
+        if os.path.exists(old_file):
+            os.rename(old_file, new_file)
+            print(f"Renamed {old_file} to {new_file}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or len(sys.argv) > 3:
