@@ -64,7 +64,7 @@ echo "]" >> $QUESTIONS_FILE
 show_progress "🧩 Generating crossword puzzle"
 
 # Run the Python script to generate the crossword (suppress ASCII output)
-PYTHONPATH=/usr/local/Cellar/topic2crossword/1.0.0/libexec/python_packages /usr/local/opt/python@3.9/bin/python3.9 generate_crossword.py $QUESTIONS_FILE "$TOPIC" 2>/dev/null | grep -E "(Calculating|files have been saved|out of [0-9]+)" || true
+python3 generate_crossword.py $QUESTIONS_FILE "$TOPIC" 2>/dev/null | grep -E "(Calculating|files have been saved|out of [0-9]+)" || true
 
 # Clean up temporary files
 rm raw_output.txt questions_cleaned.txt
