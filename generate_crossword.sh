@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Progress bar function
+show_progress() {
+    local message="$1"
+    echo -n "$message"
+    for i in {1..3}; do
+        sleep 0.5
+        echo -n "."
+    done
+    echo ""
+}
+
 # Check if a topic is provided
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <topic>"
@@ -9,12 +20,14 @@ fi
 TOPIC=$1
 QUESTIONS_FILE="questions.json"
 
-# Call the LLM to generate questions
-ollama run llama3.2:3b "Generate 30 questions about $TOPIC. Each question should have a one-word answer (at least 3 characters long). Format as CSV with question,answer on each line. Example: What is the capital of France?,Paris" > raw_output.txt
+# Show progress message
+show_progress "🤖 Generating questions about '$TOPIC' using AI"
 
-# Debug: Check the LLM output
-echo "LLM Output:"
-cat raw_output.txt
+# Call the LLM to generate questions (suppress output)
+ollama run llama3.2:3b "Generate 30 questions about $TOPIC. Each question should have a one-word answer (at least 3 characters long). Format as CSV with question,answer on each line. Example: What is the capital of France?,Paris" > raw_output.txt 2>/dev/null
+
+# Show completion message
+echo "✅ Questions generated successfully!"
 
 # Parse the CSV output to extract questions and answers
 awk -F, '{
@@ -42,21 +55,20 @@ awk -F, '{
     }
 }' raw_output.txt > questions_cleaned.txt
 
-# Debug: Check the parsed questions
-echo "Parsed Questions:"
-cat questions_cleaned.txt
-
 # Combine into a JSON array
 echo "[" > $QUESTIONS_FILE
 cat questions_cleaned.txt | sed '$ s/,$//' >> $QUESTIONS_FILE  # Remove the last comma
 echo "]" >> $QUESTIONS_FILE
 
-# Debug: Check the final JSON
-echo "Final JSON:"
-cat $QUESTIONS_FILE
+# Show progress message for crossword generation
+show_progress "🧩 Generating crossword puzzle"
 
-# Run the Python script to generate the crossword
-python3 generate_crossword.py $QUESTIONS_FILE "$TOPIC"
+# Run the Python script to generate the crossword (suppress ASCII output)
+python3 generate_crossword.py $QUESTIONS_FILE "$TOPIC" 2>/dev/null | grep -E "(Calculating|files have been saved|out of [0-9]+)" || true
 
 # Clean up temporary files
 rm raw_output.txt questions_cleaned.txt
+
+# Show final success message
+echo "🎉 Crossword puzzle generated successfully!"
+echo "📄 Check the generated PDF files in your current directory."
