@@ -21,7 +21,7 @@ class Topic2crossword < Formula
     ENV["GI_TYPELIB_PATH"] = "#{Formula["cairo"].opt_lib}/girepository-1.0"
     
     # Install Python dependencies using the correct Python version (globally)
-    system Formula["python@3.9"].opt_bin/"python3", "-m", "pip", "install", "--no-user", "-r", "requirements.txt"
+    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "--no-user", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
@@ -31,7 +31,7 @@ class Topic2crossword < Formula
     chmod 0755, bin/"topic2crossword"
     
     # Update the script to use the correct path for the Python script and Python interpreter
-    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula['python@3.9'].opt_bin}/python3 #{libexec}/generate_crossword.py"
+    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula['python@3.9'].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
   end
   
   def caveats
@@ -59,6 +59,6 @@ class Topic2crossword < Formula
     assert_predicate bin/"topic2crossword", :executable?
     
     # Test that genxword module can be imported
-    system Formula["python@3.9"].opt_bin/"python3", "-c", "import genxword; print('genxword module imported successfully')"
+    system Formula["python@3.9"].opt_bin/"python3.9", "-c", "import genxword; print('genxword module imported successfully')"
   end
 end
