@@ -4,7 +4,7 @@ class Topic2crossword < Formula
   version "1.0.0"
   
   # For GitHub repository
-  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git", branch: "main"
+  url "https://github.com/Domino-Data-Systems/Topic2CrosswordPuzzle.git"
   # You'll need to update this SHA256 after the first commit
   # sha256 "your_sha256_here"
   
@@ -16,8 +16,12 @@ class Topic2crossword < Formula
   # Users need to install it manually: brew install --cask ollama
   
   def install
-    # Install Python dependencies using the Homebrew Python
-    system Formula["python@3.9"].opt_bin/"python3.9", "-m", "pip", "install", "--user", "-r", "requirements.txt"
+    # Set up environment variables for system dependencies
+    ENV["PKG_CONFIG_PATH"] = "#{Formula["cairo"].opt_lib}/pkgconfig:#{Formula["gobject-introspection"].opt_lib}/pkgconfig"
+    ENV["GI_TYPELIB_PATH"] = "#{Formula["cairo"].opt_lib}/girepository-1.0"
+    
+    # Install Python dependencies using the correct Python version
+    system Formula["python@3.9"].opt_bin/"python3", "-m", "pip", "install", "-r", "requirements.txt"
     
     # Install the Python script
     libexec.install "generate_crossword.py"
@@ -26,8 +30,8 @@ class Topic2crossword < Formula
     bin.install "generate_crossword.sh" => "topic2crossword"
     chmod 0755, bin/"topic2crossword"
     
-    # Update the script to use the correct path for the Python script and Homebrew Python
-    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula["python@3.9"].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
+    # Update the script to use the correct path for the Python script and Python interpreter
+    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula['python@3.9'].opt_bin}/python3 #{libexec}/generate_crossword.py"
   end
   
   def caveats
@@ -38,6 +42,8 @@ class Topic2crossword < Formula
       1. Install Ollama: brew install --cask ollama
       2. Pull the model: ollama pull llama3.2:3b
       3. Start Ollama: ollama serve
+      
+      System dependencies (cairo, gobject-introspection) have been automatically installed.
       
       Usage:
         topic2crossword "your topic here"
@@ -51,5 +57,8 @@ class Topic2crossword < Formula
     # Test that the script exists and is executable
     assert_predicate bin/"topic2crossword", :exist?
     assert_predicate bin/"topic2crossword", :executable?
+    
+    # Test that genxword module can be imported
+    system Formula["python@3.9"].opt_bin/"python3", "-c", "import genxword; print('genxword module imported successfully')"
   end
 end
