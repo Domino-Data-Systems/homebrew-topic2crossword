@@ -30,8 +30,9 @@ class Topic2crossword < Formula
     bin.install "generate_crossword.sh" => "topic2crossword"
     chmod 0755, bin/"topic2crossword"
     
-    # Set PYTHONPATH in the script
+    # Set PYTHONPATH in the script and update the script to use the correct Python interpreter
     inreplace bin/"topic2crossword", "#!/bin/bash", "#!/bin/bash\nexport PYTHONPATH=#{libexec}/python_packages"
+    inreplace bin/"topic2crossword", "python3 generate_crossword.py", "#{Formula['python@3.9'].opt_bin}/python3.9 #{libexec}/generate_crossword.py"
   end
   
   def caveats
