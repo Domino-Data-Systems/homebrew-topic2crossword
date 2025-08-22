@@ -24,7 +24,7 @@ generate_questions() {
     fi
     
     # Enhanced prompt for better question generation
-    local prompt="Generate 30 high-quality questions about $topic. Each question must have a one-word answer (at least 3 characters long). Make sure questions are clear and answers are common words. Format as CSV with question,answer on each line. Example: What is the capital of France?,Paris"
+    local prompt="Generate exactly 30 questions about $topic. Each question must be a complete sentence ending with a question mark and have a one-word answer (3-12 characters long). Avoid yes/no questions. Use specific nouns, names, or terms as answers. Do not include any instructions or explanations. Format as CSV with question,answer on each line. Example: What is the capital of France?,Paris"
     
     # Call the LLM to generate questions (suppress output)
     ollama run llama3.2:3b "$prompt" > raw_output.txt 2>/dev/null
@@ -56,8 +56,29 @@ process_questions() {
         gsub(/[^A-Za-z ]/, "", answer);                     # Keep only letters and spaces
         answer = toupper(answer);                           # Convert to uppercase
         
-        # Only output if answer is at least 3 characters and contains only letters and spaces
-        if (length(answer) >= 3 && answer ~ /^[A-Z ]+$/ && question != "") {
+        # Filter out problematic entries
+        # Skip if question is too short or answer is too long
+        if (length(question) < 8 || length(answer) > 15) {
+            next
+        }
+        
+        # Skip if answer contains spaces (multiple words)
+        if (answer ~ / /) {
+            next
+        }
+        
+        # Skip if question is too short (likely not a proper question)
+        if (length(question) < 12) {
+            next
+        }
+        
+        # Skip yes/no questions (answers like YES, NO, TRUE, FALSE)
+        if (answer ~ /^(YES|NO|TRUE|FALSE)$/) {
+            next
+        }
+        
+        # Only output if answer is at least 3 characters and contains only letters
+        if (length(answer) >= 3 && answer ~ /^[A-Z]+$/ && question != "") {
             # Properly escape quotes in question for JSON
             gsub(/"/, "\\\"", question);
             print "{\"question\": \"" question "\", \"answer\": \"" answer "\"},"

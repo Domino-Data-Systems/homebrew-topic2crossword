@@ -52,8 +52,8 @@ def main(questions_file, topic="Crossword Puzzle"):
         print(f"Loaded {len(data)} questions from {questions_file}")
         
         # Check if we have enough questions
-        if len(data) < 10:
-            print(f"❌ Insufficient questions ({len(data)}). Need at least 10 questions.")
+        if len(data) < 8:
+            print(f"❌ Insufficient questions ({len(data)}). Need at least 8 questions.")
             return 2  # Exit code 2 for insufficient questions
     except Exception as e:
         print(f"Error reading from {questions_file}: {e}")
@@ -64,16 +64,32 @@ def main(questions_file, topic="Crossword Puzzle"):
 
     # Add questions to crossword
     valid_questions = 0
+    used_answers = set()  # Track used answers to avoid duplicates
+    
     for item in data:
         try:
             question = item['question']
             answer = item['answer']
             
             # Validate question and answer
-            if len(question.strip()) > 0 and len(answer.replace(" ", "")) >= 3:
+            if (len(question.strip()) > 0 and 
+                len(answer.replace(" ", "")) >= 3 and 
+                len(answer.replace(" ", "")) <= 12 and
+                answer.replace(" ", "").isalpha() and
+                question.strip().endswith('?')):
+                
+                # Clean the answer - remove spaces and ensure it's a single word
+                clean_answer = answer.replace(" ", "").upper()
+                
+                # Skip if we've already used this answer
+                if clean_answer in used_answers:
+                    print(f"Skipping duplicate answer: {clean_answer}")
+                    continue
+                
                 # Store the answer as a string, not a list
-                crossword.available_words.append([answer.replace(" ", ""), question])  # Remove spaces
-                print(f"Added word: {answer} with clue: {question}")
+                crossword.available_words.append([clean_answer, question])
+                used_answers.add(clean_answer)
+                print(f"Added word: {clean_answer} with clue: {question}")
                 valid_questions += 1
             else:
                 print(f"Skipping invalid question/answer: '{question}' / '{answer}'")
@@ -83,8 +99,8 @@ def main(questions_file, topic="Crossword Puzzle"):
 
     print(f"📝 Valid questions processed: {valid_questions}")
     
-    if valid_questions < 10:
-        print(f"❌ Insufficient valid questions ({valid_questions}). Need at least 10.")
+    if valid_questions < 8:
+        print(f"❌ Insufficient valid questions ({valid_questions}). Need at least 8.")
         return 2
 
     # Prepare the word list in the expected format for Genxword
